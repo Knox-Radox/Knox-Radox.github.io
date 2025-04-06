@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Search</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .recipe-card {
+            animation: fadeIn 0.5s ease-in;
+            border: 1px solid transparent;
+        }
+        .recipe-card:hover {
+            border-color: rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transform: translateY(-4px);
+        }
+
+        .hover-gradient:hover {
+            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .sidebar {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .btn {
+            width: 130px;
+            height: 40px;
+            font-size: 1.1em;
+            cursor: pointer;
+            background-color: #171717;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            transition: all .4s;
+            }
+
+        .btn:hover {
+            border-radius: 5px;
+            transform: translateY(-8px);
+            box-shadow: 0 7px 0 -2px #f85959,
+            0 15px 0 -4px #39a2db,
+            0 16px 10px -3px #39a2db;
+            }
+
+        .btn:active {
+            transition: all 0.2s;
+            transform: translateY(-5px);
+            box-shadow: 0 2px 0 -2px #f85959,
+            0 8px 0 -4px #39a2db,
+            0 12px 10px -3px #39a2db;
+            }
+    </style>
+</head>
+
+<body class="bg-gray-100 flex flex-col md:flex-row items-center p-4 md:p-6">
+    <div class="sidebar w-full md:w-64 bg-white border-b md:border-r h-auto md:h-screen p-4 md:p-6 fixed left-0 right-0 md:right-auto top-0 z-10">
+        <div class="flex items-center justify-between md:justify-start mb-4 md:mb-10">
+            <div class="flex items-center">
+                <video src="organize-teamspaces.mp4" autoplay muted width="30" height="30" class="md:w-10 md:h-10"></video>
+                <h2 class="text-xl md:text-2xl font-bold text-gray-800 ml-2">Recipe Book</h2>
+            </div>
+
+            <button id="mobileMenuToggle" class="md:hidden focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </div>
+        
+        <div id="loading" class="hidden fixed inset-0 flex items-center justify-center bg-gray-100 bg-opacity-50">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
+        </div>
+        
+
+        <div class="flex items-center mt-[-20px] hidden md:flex">
+            <video src="plan-todos.mp4" autoplay muted width="40" height="40"></video>
+            <p class="text-gray-500 text-sm ml-2">Organize Your Culinary Journey</p>
+        </div>
+        
+        <hr class="my-4 md:my-8 h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-green-500 border-0 shadow-lg hidden md:block">
+        
+        <nav id="mobileMenu" class="hidden md:block">
+            <ul class="flex md:flex-col md:space-y-2 space-x-2 md:space-x-0">
+                <li>
+                    <button onclick="location.href='recipe_book.html'" class="w-full text-left p-2 rounded hover-gradient flex items-center transition duration-50 ease-in-out hover:-translate-y-1 hover:scale-103">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                        </svg>
+                        <span class="hidden md:inline">All Recipes</span>
+                    </button>
+                </li>
+                <li>
+                    <button onclick="location.href='Search_chart_v2.html'" id="searchRecipes" class="w-full text-left p-2 rounded border-2 border-black bg-white text-black font-semibold shadow-md flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" x="0px" y="0px" width="100" height="100" viewBox="0 0 30 30">
+                            <path d="M 13 3 C 7.4889971 3 3 7.4889971 3 13 C 3 18.511003 7.4889971 23 13 23 C 15.396508 23 17.597385 22.148986 19.322266 20.736328 L 25.292969 26.707031 A 1.0001 1.0001 0 1 0 26.707031 25.292969 L 20.736328 19.322266 C 22.148986 17.597385 23 15.396508 23 13 C 23 7.4889971 18.511003 3 13 3 z M 13 5 C 17.430123 5 21 8.5698774 21 13 C 21 17.430123 17.430123 21 13 21 C 8.5698774 21 5 17.430123 5 13 C 5 8.5698774 8.5698774 5 13 5 z"></path>
+                        </svg>
+                        <span class="hidden md:inline">Search Recipes</span>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+        
+        <div class="hidden md:block mt-[420px] font-medium text-sm underline hover:decoration-pink-500">
+            <a href="https://knox-radox.github.io/">
+            <button class="w-full text-left rounded hover-gradient flex items-center">Created by M Advaith Balaji &nbsp;<span class="relative flex size-3">
+                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75"></span>
+                <span class="relative inline-flex size-2 rounded-full bg-sky-500"></span>
+              </span></button>
+            </a>
+        </div>
+    </div>
+    
+    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white p-2 text-center border-t text-xs font-medium z-10">
+        <a href="https://knox-radox.github.io/" class="flex items-center justify-center">
+            Created by M Advaith Balaji &nbsp;
+            <span class="relative flex size-2">
+                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-sky-400 opacity-75"></span>
+                <span class="relative inline-flex size-1 rounded-full bg-sky-500"></span>
+            </span>
+        </a>
+    </div>
+    
+    <div class="w-full flex justify-center">
+        <div class="w-full max-w-lg mt-16 md:mt-0 pb-10 md:pb-0">
+            <div class="flex bg-white shadow-lg rounded-lg overflow-hidden p-2 mb-6 mx-4 md:mx-0">
+                <input type="text" id="search" placeholder="Search for a recipe..."
+                    class="flex-1 p-2 md:p-3 border-none outline-none text-gray-700 text-sm md:text-base" />
+                <button onclick="fetchRecipe()"
+                    class="bg-blue-500 text-white px-3 md:px-4 rounded-md btn text-sm md:text-base">
+                    Search
+                </button>
+            </div>
+            <div id="recipe-container" class="mx-auto w-full max-w-lg"></div>
+            <div id="nutrition-container" class="mx-auto w-full max-w-lg"></div>
+        </div>
+    </div>
+    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const mobileMenu = document.getElementById('mobileMenu');
+            
+            if (mobileMenuToggle && mobileMenu) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+        });
+
+        let ingredients = [];
+        async function fetchRecipe() {
+    const query = document.getElementById('search').value;
+    if (!query) return;
+
+    const container = document.getElementById('recipe-container');
+    const loading = document.getElementById('loading');
+
+    container.innerHTML = ''; 
+    loading.classList.remove('hidden'); 
+
+    try {
+        const response = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`);
+        const data = await response.json();
+        
+        loading.classList.add('hidden'); 
+
+        if (data.meals) {
+            const meal = data.meals[0];
+            // const ingredients = [];
+            for (let i = 1; i <= 20; i++) {
+                if (meal[`strIngredient${i}`] && meal[`strMeasure${i}`]) {
+                    ingredients.push(`${meal[`strMeasure${i}`]} ${meal[`strIngredient${i}`]}`);
+                }
+            }
+            
+            container.innerHTML = `
+                <div class="recipe-card bg-white rounded-lg shadow-lg p-4">
+                    <img src="${meal.strMealThumb}" alt="${meal.strMeal}" class="w-full h-48 object-cover rounded-md">
+                    <h2 class="text-xl font-bold mt-2">${meal.strMeal}</h2>
+                    <p class="text-gray-600">${meal.strCategory} | ${meal.strArea}</p>
+                    <h3 class="font-semibold mt-2">Ingredients:</h3>
+                    <ul class="list-disc pl-5 text-gray-700">${ingredients.map(i => `<li>${i}</li>`).join('')}</ul>
+                    <a href="${meal.strYoutube}" target="_blank" class="text-blue-500 mt-3 block">Watch Recipe</a>
+                    <button onclick="fetchNutritionalValues()"class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-3 rounded-md">Calculate Nutritional Values</button>   
+                </div>
+                <hr class="my-4 h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-green-500 border-0 shadow-lg">`;
+        } else {
+            container.innerHTML = '<p class="text-gray-600">No recipe found.</p>';
+        }
+    } catch (error) {
+        loading.classList.add('hidden');
+        container.innerHTML = '<p class="text-red-500">Error fetching recipe. Try again.</p>';
+    }
+}
+
+
+
+        async function fetchNutritionalValues() {
+        const apiKey = "AIzaSyAqodLe38iwhJGy06u-UDAKjb-qCOV442o"; 
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+        const prompt = `Provide a table of nutritional values for the following ingredients: ${ingredients.join(', ')}. 
+                        Include columns: Ingredient, Calories, Carbs, Proteins, Fats. Return data in JSON format`;
+
+        const requestBody = {
+            contents: [{
+                parts: [{ text: prompt }]
+            }]
+        };
+
+        const loading = document.getElementById('loading');
+        loading.classList.remove('hidden');
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            const data = await response.json();
+            console.log("Raw:", data);
+
+            let rawText = data.candidates[0].content.parts[0].text;
+            console.log("Raw API Response:", rawText);
+
+            let cleanJsonText = rawText.replace(/```json|```/g, "").trim();
+        
+            let ingredientsData = JSON.parse(cleanJsonText);
+            
+            console.log("Parsed Nutritional Data:", ingredientsData); 
+            loading.classList.add('hidden');
+            renderNutritionTable(ingredientsData);
+        } catch (error) {
+            loading.classList.add('hidden');
+            console.error("Error fetching nutritional data:", error);
+        }
+    }
+
+    function renderNutritionTable(nutritionData) {
+        const container = document.getElementById('nutrition-container');
+        container.innerHTML = ''; 
+
+        const table = document.createElement('table');
+        table.className = "w-full border-collapse bg-white shadow-lg rounded-lg overflow-hidden";
+
+        const headerRow = `
+        
+            
+                <tr>
+                    <th class="px-4 py-3 text-left font-semibold border-b-2 border-gray-700">Ingredient</th>
+                    <th class="px-4 py-3 text-center font-semibold border-b-2 border-gray-700">Calories</th>
+                    <th class="px-4 py-3 text-center font-semibold border-b-2 border-gray-700">Carbs</th>
+                    <th class="px-4 py-3 text-center font-semibold border-b-2 border-gray-700">Proteins</th>
+                    <th class="px-4 py-3 text-center font-semibold border-b-2 border-gray-700">Fats</th>
+                </tr>
+           
+        `;
+
+        const bodyRows = nutritionData.map((item, index) => `
+            <tr class="${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-gray-100 transition-colors duration-200">
+                <td class="px-4 py-3 border-b border-gray-200 font-medium">${item.Ingredient}</td>
+                <td class="px-4 py-3 border-b border-gray-200 text-center">${item.Calories}</td>
+                <td class="px-4 py-3 border-b border-gray-200 text-center">${item.Carbs}</td>
+                <td class="px-4 py-3 border-b border-gray-200 text-center">${item.Proteins}</td>
+                <td class="px-4 py-3 border-b border-gray-200 text-center">${item.Fats}</td>
+            </tr>
+        `).join('');
+
+        table.innerHTML = headerRow + `<tbody>${bodyRows}</tbody>`;
+        container.appendChild(table);
+    }
+    </script>
+</body>
+</html>

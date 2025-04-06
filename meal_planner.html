@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diet Plan Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 0 20px rgba(0, 0, 0, 0.06)',
+                        'card': '0 8px 30px rgba(0, 0, 0, 0.12)',
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        .diet-btn.active-vegan {
+            background-color: #22c55e;
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(34, 197, 94, 0.3);
+        }
+        
+        .diet-btn.active-keto {
+            background-color: #8b5cf6;
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.3);
+        }
+        
+        .diet-btn.active-protein {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+        }
+        
+        .meal-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .meal-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(120deg, #f0fdf4, #dcfce7, #f0fdf4);
+        }
+        
+        .custom-checkbox input:checked + span {
+            background-color: #22c55e;
+            border-color: #22c55e;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .hover-gradient:hover {
+            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .sidebar {
+            animation: slideIn 0.8s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen font-sans">
+
+    <div class="relative overflow-hidden mt-10 lg:mt-0 lg:ml-[250px]">
+        <div class="container mx-auto px-4 py-12 relative z-10">
+            <header class="text-center mb-12">
+                <div class="inline-block mb-4">
+                    <div class="flex items-center justify-center w-16 h-16 mx-auto rounded-full bg-primary-50 text-primary-600 mb-3 shadow-soft">
+                        <i class="fas fa-utensils text-2xl"></i>
+                    </div>
+                </div>
+                <h1 class="text-4xl font-bold text-gray-800 mb-2">Diet Plan Generator</h1>
+                <p class="text-gray-600 max-w-lg mx-auto">Create a personalized weekly meal plan tailored to your dietary preferences with the power of artificial intelligence</p>
+            </header>
+
+            <div class="max-w-3xl mx-auto">
+                <div class="bg-white rounded-2xl shadow-card p-8 mb-10 transform transition-all">
+                    <div class="mb-8">
+                        <h2 class="text-xl font-semibold mb-5 flex items-center">
+                            <span class="inline-block w-8 h-8 rounded-full bg-primary-100 text-primary-600 mr-3 flex items-center justify-center">
+                                <i class="fas fa-apple-alt text-sm"></i>
+                            </span>
+                            Select Your Diet Preference
+                        </h2>
+                        <div class="flex flex-wrap gap-4 justify-center">
+                            <button id="vegan-btn" class="diet-btn flex items-center px-6 py-3 rounded-full border-2 border-green-500 text-green-600 hover:bg-green-500 hover:text-white transition-all">
+                                <i class="fas fa-seedling mr-2"></i>
+                                <span>Vegan</span>
+                            </button>
+                            <button id="keto-btn" class="diet-btn flex items-center px-6 py-3 rounded-full border-2 border-purple-500 text-purple-600 hover:bg-purple-500 hover:text-white transition-all">
+                                <i class="fas fa-drumstick-bite mr-2"></i>
+                                <span>Keto</span>
+                            </button>
+                            <button id="protein-btn" class="diet-btn flex items-center px-6 py-3 rounded-full border-2 border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white transition-all">
+                                <i class="fas fa-dumbbell mr-2"></i>
+                                <span>High Protein</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-8 border-t border-gray-100 pt-6">
+                        <h2 class="text-xl font-semibold mb-5 flex items-center">
+                            <span class="inline-block w-8 h-8 rounded-full bg-primary-100 text-primary-600 mr-3 flex items-center justify-center">
+                                <i class="fas fa-sliders-h text-sm"></i>
+                            </span>
+                            Additional Preferences
+                        </h2>
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div class="space-y-3">
+                                <label class="flex items-center cursor-pointer">
+                                    <div class="relative inline-block">
+                                        <input type="checkbox" id="glutenFree" class="sr-only">
+                                        <span class="custom-checkbox block w-6 h-6 border-2 border-gray-300 rounded transition-colors"></span>
+                                        <i class="fas fa-check absolute text-xs text-white" style="top: 7px; left: 5px; display: none;"></i>
+                                    </div>
+                                    <span class="ml-3 text-gray-700">Gluten Free</span>
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <div class="relative inline-block">
+                                        <input type="checkbox" id="nutFree" class="sr-only">
+                                        <span class="custom-checkbox block w-6 h-6 border-2 border-gray-300 rounded transition-colors"></span>
+                                        <i class="fas fa-check absolute text-xs text-white" style="top: 7px; left: 5px; display: none;"></i>
+                                    </div>
+                                    <span class="ml-3 text-gray-700">Nut Free</span>
+                                </label>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Calories per day (approx)</label>
+                                <div class="relative">
+                                    <select id="calories" class="block w-full pl-4 pr-10 py-3 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 rounded-lg shadow-sm appearance-none bg-white">
+                                        <option value="1500">1500 calories</option>
+                                        <option value="2000" selected>2000 calories</option>
+                                        <option value="2500">2500 calories</option>
+                                        <option value="3000">3000 calories</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
+                                        <i class="fas fa-chevron-down text-xs"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button id="generate-btn" class="pulse bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-10 rounded-lg shadow-lg transition-all transform hover:scale-105 hover:shadow-xl flex items-center mx-auto">
+                            <i class="fas fa-magic mr-2"></i>
+                            Generate Meal Plan
+                        </button>
+                    </div>
+                </div>
+
+                <div id="loading" class="hidden text-center my-12 fade-in">
+                    <div class="inline-flex flex-col items-center">
+                        <div class="w-16 h-16 relative">
+                            <div class="absolute inset-0 rounded-full border-4 border-t-primary-500 border-gray-200 animate-spin"></div>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <i class="fas fa-brain text-primary-500 opacity-80"></i>
+                            </div>
+                        </div>
+                        <p class="mt-4 text-gray-600">Our AI is crafting your personalized meal plan...</p>
+                        <div class="mt-3 flex space-x-2">
+                            <span class="inline-block w-2 h-2 bg-primary-500 rounded-full animate-bounce" style="animation-delay: 0s"></span>
+                            <span class="inline-block w-2 h-2 bg-primary-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+                            <span class="inline-block w-2 h-2 bg-primary-500 rounded-full animate-bounce" style="animation-delay: 0.4s"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="result" class="hidden mt-8 fade-in">
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">Your Weekly Meal Plan</h2>
+                        <p class="text-gray-600 mb-6">Carefully crafted based on your dietary preferences</p>
+                        <div id="diet-badge" class="inline-block px-4 py-2 rounded-full bg-primary-100 text-primary-700 font-medium mb-6">
+                            <i class="fas fa-check-circle mr-1"></i>
+                            <span id="diet-type">Vegan</span> Diet
+                        </div>
+                    </div>
+                    
+                    <div id="meal-plan" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"></div>
+                    
+                    <div class="text-center mt-10">
+                        <button id="download-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition-all transform hover:scale-105 hover:shadow-xl flex items-center mx-auto">
+                            <i class="fas fa-download mr-2"></i>
+                            Download Meal Plan
+                        </button>
+                        <button id="new-plan-btn" class="mt-4 text-gray-600 hover:text-gray-800 font-medium flex items-center mx-auto">
+                            <i class="fas fa-sync-alt mr-2"></i>
+                            Generate New Plan
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="sidebar w-full md:w-64 bg-white border-b md:border-r h-auto md:h-screen p-4 md:p-6 fixed left-0 right-0 md:right-auto top-0 z-10">
+        <div class="flex items-center justify-between md:justify-start mb-4 md:mb-10">
+            <div class="flex items-center">
+                <video src="organize-teamspaces.mp4" autoplay muted width="30" height="30" class="md:w-10 md:h-10"></video>
+                <h2 class="text-xl md:text-2xl font-bold text-gray-800 ml-2">Recipe Book</h2>
+            </div>
+
+            <button id="mobileMenuToggle" class="md:hidden focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </div>
+        
+        <div id="loading" class="hidden fixed inset-0 flex items-center justify-center bg-gray-100 bg-opacity-50">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
+        </div>
+        
+
+        <div class="flex items-center mt-[-20px] hidden md:flex">
+            <video src="plan-todos.mp4" autoplay muted width="40" height="40"></video>
+            <p class="text-gray-500 text-sm ml-2">Organize Your Culinary Journey</p>
+        </div>
+        
+        <hr class="my-4 md:my-8 h-1 bg-gradient-to-r from-purple-500 via-blue-500 to-green-500 border-0 shadow-lg hidden md:block">
+        
+        <nav id="mobileMenu" class="hidden md:block">
+            <ul class="flex md:flex-col md:space-y-2 space-x-2 md:space-x-0">
+                <li>
+                    <button onclick="location.href='recipe_book.html'" class="w-full text-left p-2 rounded hover-gradient flex items-center transition duration-50 ease-in-out hover:-translate-y-1 hover:scale-103">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                        </svg>
+                        <span class="hidden md:inline">All Recipes</span>
+                    </button>
+                </li>
+                <li>
+                    <button onclick="location.href='Search_chart_v2.html'" id="searchRecipes" class="w-full text-left p-2 rounded hover-gradient flex items-center transition duration-50 ease-in-out hover:-translate-y-1 hover:scale-103">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" x="0px" y="0px" width="100" height="100" viewBox="0 0 30 30">
+                            <path d="M 13 3 C 7.4889971 3 3 7.4889971 3 13 C 3 18.511003 7.4889971 23 13 23 C 15.396508 23 17.597385 22.148986 19.322266 20.736328 L 25.292969 26.707031 A 1.0001 1.0001 0 1 0 26.707031 25.292969 L 20.736328 19.322266 C 22.148986 17.597385 23 15.396508 23 13 C 23 7.4889971 18.511003 3 13 3 z M 13 5 C 17.430123 5 21 8.5698774 21 13 C 21 17.430123 17.430123 21 13 21 C 8.5698774 21 5 17.430123 5 13 C 5 8.5698774 8.5698774 5 13 5 z"></path>
+                        </svg>
+                        <span class="hidden md:inline">Search Recipes</span>
+                    </button>
+                </li>
+                <li>
+                    <button onclick="location.href='recipe_ocr.html'" id="searchRecipes" class="w-full text-left p-2 rounded hover-gradient flex items-center transition duration-50 ease-in-out hover:-translate-y-1 hover:scale-103">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" x="0px" y="0px" width="100" height="100" viewBox="0 0 30 30" fill="currentColor">
+                            <path d="M5 3C4.448 3 4 3.448 4 4V26C4 26.552 4.448 27 5 27H19C19.552 27 20 26.552 20 26V18H25C25.552 18 26 17.552 26 17V4C26 3.448 25.552 3 25 3H5ZM6 5H24V16H19C18.448 16 18 16.448 18 17V25H6V5ZM9 7C8.448 7 8 7.448 8 8V12C8 12.552 8.448 13 9 13H21C21.552 13 22 12.552 22 12V8C22 7.448 21.552 7 21 7H9ZM10 9H20V11H10V9ZM9 15C8.448 15 8 15.448 8 16V20C8 20.552 8.448 21 9 21H15C15.552 21 16 20.552 16 20V16C16 15.448 15.552 15 15 15H9ZM10 17H14V19H10V17Z"/>
+                        </svg>                        
+                        <span class="hidden md:inline">Recipe Card Reader</span>
+                    </button>
+                </li>
+                <li>
+                    <button onclick="location.href='meal_planner.html'" id="searchRecipes" class="w-full text-left p-2 rounded border-2 border-black bg-white text-black font-semibold shadow-md flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" x="0px" y="0px" width="100" height="100" viewBox="0 0 30 30" fill="currentColor">
+                            <path d="M7 3C6.448 3 6 3.448 6 4V14C6 14.552 6.448 15 7 15H8V26C8 26.552 8.448 27 9 27H11C11.552 27 12 26.552 12 26V15H13C13.552 15 14 14.552 14 14V4C14 3.448 13.552 3 13 3H7ZM16 3V13C16 13.552 16.448 14 17 14H18V26C18 26.552 18.448 27 19 27H21C21.552 27 22 26.552 22 26V14H23C23.552 14 24 13.552 24 13V3C24 2.448 23.552 2 23 2H17C16.448 2 16 2.448 16 3Z"/>
+                        </svg>                     
+                        <span class="hidden md:inline">Diet Planner</span>
+                    </button>
+                </li>
+            </ul>
+
+            <div class="flex mt-4 md:mt-[290px]">
+                <div class="flex items-center bg-white border border-gray-300 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group w-full max-w-[90vw] md:w-[257px] md:ml-[-26px]">
+                    <div class="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-indigo-500 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    
+                    <div class="relative mx-2 my-2">
+                        <div class="w-10 h-10 rounded-full bg-indigo-50 border-2 border-gray-100 overflow-hidden transform group-hover:scale-105 transition-transform duration-300">
+                            <img src="profile-circle-svgrepo-com.svg" alt="User avatar" class="w-full h-full object-cover">
+                        </div>
+                    </div>
+                    
+                    <div class="mr-3">
+                        <p id="user-name" class="text-sm font-medium text-gray-800 truncate max-w-[120px]">Loading...</p>
+                        <p id="user-designation" class="text-xs text-gray-500 mt-0.5">Loading...</p>
+                    </div>
+                    
+                    <button class="flex items-center text-sm text-gray-500 hover:text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-md ml-2 mr-1 border-l border-gray-200 transition-colors duration-200" onclick="alert('Signing out...'); window.location.href='login.html'">
+                        <span class="mr-1 transform group-hover:translate-x-0.5 transition-transform duration-200">→</span>
+                        Sign out
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        const name = localStorage.getItem('userName') || "Guest";
+        const designation = localStorage.getItem('userDesignation') || "Visitor";
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('user-name').textContent = name;
+            document.getElementById('user-designation').textContent = designation;
+        });
+
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const mobileMenu = document.getElementById('mobileMenu');
+            
+            if (mobileMenuToggle && mobileMenu) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+        });
+
+        const meals = {
+            vegan: {
+                breakfast: [
+                    "Avocado toast with cherry tomatoes and microgreens",
+                    "Banana and mixed berry smoothie bowl with chia seeds",
+                    "Tofu scramble with bell peppers, spinach and nutritional yeast",
+                    "Overnight chia seed pudding with coconut milk and fresh fruit",
+                    "Vegan pancakes with maple syrup and fresh berries",
+                    "Chickpea flour omelet with sautéed mushrooms and herbs",
+                    "Almond butter and caramelized banana steel-cut oatmeal"
+                ],
+                lunch: [
+                    "Rainbow quinoa buddha bowl with roasted seasonal vegetables",
+                    "Hearty lentil and vegetable soup with fresh herbs",
+                    "Mediterranean hummus wrap with roasted vegetables and tahini",
+                    "Greek-inspired chickpea salad with olives and lemon dressing",
+                    "Vegan black bean burger with avocado and sweet potato fries",
+                    "Stuffed bell peppers with herbed quinoa and roasted tomato sauce",
+                    "Sweet potato and black bean power bowl with lime-cilantro dressing"
+                ],
+                dinner: [
+                    "Vegetable and tofu stir-fry with ginger-garlic sauce over brown rice",
+                    "Creamy coconut lentil and vegetable curry with basmati rice",
+                    "Vegan pasta primavera with fresh herbs and lemon-olive oil sauce",
+                    "Roasted vegetable and chickpea bowl with tahini-maple dressing",
+                    "Wild mushroom and green pea risotto with fresh thyme",
+                    "Hearty vegan chili with cornbread and cashew sour cream",
+                    "Cauliflower and chickpea tacos with avocado-lime crema"
+                ],
+                snacks: [
+                    "Fresh carrot sticks with homemade hummus",
+                    "Apple slices with cinnamon almond butter",
+                    "Energy-boosting trail mix with nuts, seeds and dried fruit",
+                    "Crispy roasted chickpeas with smoked paprika",
+                    "No-bake energy balls with dates, nuts and dark chocolate",
+                    "Rainbow vegetable sticks with fresh guacamole",
+                    "Seasonal fresh fruit salad with mint leaves"
+                ]
+            },
+            keto: {
+                breakfast: [
+                    "Avocado and crispy bacon omelet with fresh herbs",
+                    "Keto blueberry smoothie with almond milk, avocado and vanilla",
+                    "Fluffy eggs and cheddar cheese with sautéed spinach",
+                    "Bacon and gruyère cheese frittata with asparagus",
+                    "Almond flour keto pancakes with butter and berries",
+                    "Smoked salmon with cream cheese, capers and dill",
+                    "Coconut milk chia seed pudding with raspberries"
+                ],
+                lunch: [
+                    "Tuna salad-stuffed avocados with lemon aioli",
+                    "Grilled chicken Caesar salad with parmesan crisps",
+                    "Hearty beef and vegetable soup with bone broth",
+                    "Keto club sandwich with lettuce wrap and avocado mayo",
+                    "Bacon-wrapped asparagus with herb butter sauce",
+                    "Classic Cobb salad with homemade ranch dressing",
+                    "Zucchini noodles with basil pesto and grilled chicken"
+                ],
+                dinner: [
+                    "Herb-crusted baked salmon with lemon asparagus",
+                    "Grass-fed beef steak with garlic cauliflower mash",
+                    "Crispy-skin chicken thighs with lemon-butter broccoli",
+                    "Herb-crusted pork chops with garlic green beans",
+                    "Spicy shrimp stir-fry with low-carb mixed vegetables",
+                    "Baked cod with lemon, capers and wilted spinach",
+                    "Ground beef stuffed peppers with melted cheese"
+                ],
+                snacks: [
+                    "Artisanal cheese plate with olives",
+                    "Perfectly soft-boiled eggs with sea salt",
+                    "Fresh avocado slices with everything bagel seasoning",
+                    "Grass-fed beef jerky with no added sugar",
+                    "Premium pork rinds with herb-infused olive oil",
+                    "Marinated Mediterranean olives with herbs",
+                    "Dry-roasted macadamia nuts with sea salt"
+                ]
+            },
+            highProtein: {
+                breakfast: [
+                    "Power protein smoothie with whey, berries and almond butter",
+                    "Greek yogurt parfait with mixed berries and chopped nuts",
+                    "Farm-fresh eggs with turkey bacon and avocado",
+                    "Protein-packed cottage cheese with fresh seasonal fruit",
+                    "Fluffy protein pancakes with Greek yogurt and maple drizzle",
+                    "Spinach and feta egg white omelet with fresh herbs",
+                    "Wild-caught smoked salmon with poached eggs and dill"
+                ],
+                lunch: [
+                    "Herb-grilled chicken salad with mixed greens and walnuts",
+                    "Mediterranean tuna and chickpea wrap with veggies",
+                    "Hearty turkey and vegetable soup with barley",
+                    "Lean grass-fed beef burger with avocado and side salad",
+                    "Quinoa power bowl with grilled chicken and roasted vegetables",
+                    "Citrus shrimp and white bean salad with fresh herbs",
+                    "Fresh salmon poke bowl with brown rice and vegetables"
+                ],
+                dinner: [
+                    "Perfectly grilled steak with roasted sweet potato wedges",
+                    "Herb-roasted chicken breast with seasoned brown rice",
+                    "Lean turkey meatballs with whole grain pasta and marinara",
+                    "Lemon herb baked cod with garlic quinoa",
+                    "Asian-inspired lean beef stir-fry with mixed vegetables",
+                    "Herb-crusted pork tenderloin with roasted vegetables",
+                    "Hearty lentil and chicken soup with fresh herbs"
+                ],
+                snacks: [
+                    "Clean protein bar with minimal added sugar",
+                    "Creamy Greek yogurt with honey drizzle",
+                    "Lean beef jerky with no artificial additives",
+                    "Perfect hard-boiled eggs with cracked pepper",
+                    "Sustainably-caught tuna on whole grain crackers",
+                    "Refreshing post-workout protein shake",
+                    "Protein-rich cottage cheese with fresh berries"
+                ]
+            },
+            vegan: {
+                breakfast: [
+                    "Avocado toast with cherry tomatoes and microgreens",
+                    "Banana and mixed berry smoothie bowl with chia seeds",
+                    "Tofu scramble with bell peppers, spinach, and nutritional yeast",
+                    "Overnight chia seed pudding with coconut milk and fresh fruit",
+                    "Vegan pancakes with maple syrup and fresh berries",
+                    "Chickpea flour omelet with sautéed mushrooms and herbs",
+                    "Almond butter and caramelized banana steel-cut oatmeal",
+                    "Peanut butter banana toast with flaxseeds",
+                    "Coconut yogurt with granola and fresh mango",
+                    "Vegan protein smoothie with plant-based protein powder and almond milk"
+                ],
+                lunch: [
+                    "Rainbow quinoa buddha bowl with roasted seasonal vegetables",
+                    "Hearty lentil and vegetable soup with fresh herbs",
+                    "Mediterranean hummus wrap with roasted vegetables and tahini",
+                    "Greek-inspired chickpea salad with olives and lemon dressing",
+                    "Vegan black bean burger with avocado and sweet potato fries",
+                    "Stuffed bell peppers with herbed quinoa and roasted tomato sauce",
+                    "Sweet potato and black bean power bowl with lime-cilantro dressing",
+                    "Thai-inspired peanut tofu bowl with jasmine rice",
+                    "Zucchini noodles with homemade vegan pesto",
+                    "Spicy chickpea and avocado tacos with fresh salsa"
+                ],
+                dinner: [
+                    "Vegetable and tofu stir-fry with ginger-garlic sauce over brown rice",
+                    "Creamy coconut lentil and vegetable curry with basmati rice",
+                    "Vegan pasta primavera with fresh herbs and lemon-olive oil sauce",
+                    "Roasted vegetable and chickpea bowl with tahini-maple dressing",
+                    "Wild mushroom and green pea risotto with fresh thyme",
+                    "Hearty vegan chili with cornbread and cashew sour cream",
+                    "Cauliflower and chickpea tacos with avocado-lime crema",
+                    "Grilled eggplant and lentil stew with warm whole grain bread",
+                    "Vegan sushi rolls with avocado, cucumber, and spicy mayo",
+                    "Spaghetti squash with garlic tomato sauce and basil"
+                ],
+                snacks: [
+                    "Fresh carrot sticks with homemade hummus",
+                    "Apple slices with cinnamon almond butter",
+                    "Energy-boosting trail mix with nuts, seeds, and dried fruit",
+                    "Crispy roasted chickpeas with smoked paprika",
+                    "No-bake energy balls with dates, nuts, and dark chocolate",
+                    "Rainbow vegetable sticks with fresh guacamole",
+                    "Seasonal fresh fruit salad with mint leaves",
+                    "Coconut date rolls with cacao powder",
+                    "Spicy roasted almonds with a hint of cayenne",
+                    "Homemade popcorn with nutritional yeast and sea salt"
+                ]
+            },
+            keto: {
+                breakfast: [
+                    "Avocado and scrambled eggs with smoked salmon",
+                    "Keto blueberry smoothie with almond milk, avocado, and vanilla",
+                    "Fluffy eggs and cheddar cheese with sautéed spinach",
+                    "Mushroom and goat cheese omelet with fresh herbs",
+                    "Almond flour keto pancakes with butter and berries",
+                    "Smoked salmon with cream cheese, capers, and dill",
+                    "Coconut milk chia seed pudding with raspberries",
+                    "Egg muffins with spinach, feta, and sun-dried tomatoes",
+                    "Cauliflower hash browns with poached eggs",
+                    "Keto avocado toast with flaxseed bread"
+                ],
+                lunch: [
+                    "Tuna salad-stuffed avocados with lemon aioli",
+                    "Grilled chicken Caesar salad with parmesan crisps",
+                    "Hearty seafood chowder with coconut milk base",
+                    "Keto club sandwich with lettuce wrap and avocado mayo",
+                    "Zucchini noodles with basil pesto and grilled chicken",
+                    "Caprese salad with balsamic glaze and extra virgin olive oil",
+                    "Baked chicken thighs with garlic butter asparagus",
+                    "Cucumber and smoked salmon roll-ups with cream cheese",
+                    "Stuffed portobello mushrooms with spinach and cheese",
+                    "Spicy shrimp lettuce wraps with avocado dressing"
+                ],
+                dinner: [
+                    "Herb-crusted baked salmon with lemon asparagus",
+                    "Keto butter chicken with cauliflower rice",
+                    "Crispy-skin chicken thighs with lemon-butter broccoli",
+                    "Spicy shrimp stir-fry with low-carb mixed vegetables",
+                    "Baked cod with lemon, capers, and wilted spinach",
+                    "Seared tuna steak with garlic bok choy",
+                    "Garlic butter scallops with roasted zucchini",
+                    "Keto eggplant parmesan with marinara and mozzarella",
+                    "Buffalo chicken stuffed bell peppers",
+                    "Creamy mushroom and spinach chicken skillet"
+                ],
+                snacks: [
+                    "Artisanal cheese plate with olives",
+                    "Perfectly soft-boiled eggs with sea salt",
+                    "Fresh avocado slices with everything bagel seasoning",
+                    "Dry-roasted macadamia nuts with sea salt",
+                    "Smoked salmon and cucumber bites",
+                    "Baked kale chips with parmesan",
+                    "Almond butter fat bombs with coconut flakes",
+                    "Celery sticks with whipped herbed cream cheese",
+                    "Dark chocolate squares with hazelnuts",
+                    "Spicy roasted sunflower seeds"
+                ]
+            }
+        };
+
+        const dietButtons = document.querySelectorAll('.diet-btn');
+        const generateBtn = document.getElementById('generate-btn');
+        const loadingDiv = document.getElementById('loading');
+        const resultDiv = document.getElementById('result');
+        const mealPlanDiv = document.getElementById('meal-plan');
+        const downloadBtn = document.getElementById('download-btn');
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        const dietTypeSpan = document.getElementById('diet-type');
+        const dietBadge = document.getElementById('diet-badge');
+        const newPlanBtn = document.getElementById('new-plan-btn');
+
+        let selectedDiet = null;
+
+        dietButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                dietButtons.forEach(btn => {
+                    btn.classList.remove('active-vegan', 'active-keto', 'active-protein');
+                });
+
+                if (button.id === 'vegan-btn') {
+                    button.classList.add('active-vegan');
+                    selectedDiet = 'vegan';
+                    dietTypeSpan.textContent = 'Vegan';
+                    dietBadge.className = 'inline-block px-4 py-2 rounded-full bg-green-100 text-green-700 font-medium mb-6';
+                } else if (button.id === 'keto-btn') {
+                    button.classList.add('active-keto');
+                    selectedDiet = 'keto';
+                    dietTypeSpan.textContent = 'Keto';
+                    dietBadge.className = 'inline-block px-4 py-2 rounded-full bg-purple-100 text-purple-700 font-medium mb-6';
+                } else if (button.id === 'protein-btn') {
+                    button.classList.add('active-protein');
+                    selectedDiet = 'highProtein';
+                    dietTypeSpan.textContent = 'High Protein';
+                    dietBadge.className = 'inline-block px-4 py-2 rounded-full bg-blue-100 text-blue-700 font-medium mb-6';
+                }
+            });
+        });
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const checkIcon = this.parentNode.querySelector('.fa-check');
+                if (this.checked) {
+                    this.nextElementSibling.classList.add('bg-primary-500', 'border-primary-500');
+                    checkIcon.style.display = 'block';
+                    checkIcon.classList.add('text-white');
+                } else {
+                    this.nextElementSibling.classList.remove('bg-primary-500', 'border-primary-500');
+                    checkIcon.style.display = 'none';
+                }
+            });
+        });
+
+
+        async function generateMealPlan() {
+
+            loadingDiv.classList.remove('hidden');
+            resultDiv.classList.add('hidden');
+
+            try {
+                const glutenFree = document.getElementById('glutenFree').checked;
+                const nutFree = document.getElementById('nutFree').checked;
+                const calories = document.getElementById('calories').value;
+
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                let mealPlanHTML = '';
+
+                const getColorClass = () => {
+                    switch(selectedDiet) {
+                        case 'vegan': return 'bg-green-100 text-green-800';
+                        case 'keto': return 'bg-purple-100 text-purple-800';
+                        case 'highProtein': return 'bg-blue-100 text-blue-800';
+                        default: return 'bg-primary-100 text-primary-800';
+                    }
+                };
+
+                const getBorderClass = () => {
+                    switch(selectedDiet) {
+                        case 'vegan': return 'border-green-200';
+                        case 'keto': return 'border-purple-200';
+                        case 'highProtein': return 'border-blue-200';
+                        default: return 'border-primary-200';
+                    }
+                };
+
+                days.forEach((day, index) => {
+                    const breakfast = getRandomMeal(meals[selectedDiet].breakfast, glutenFree, nutFree);
+                    const lunch = getRandomMeal(meals[selectedDiet].lunch, glutenFree, nutFree);
+                    const dinner = getRandomMeal(meals[selectedDiet].dinner, glutenFree, nutFree);
+                    const snack = getRandomMeal(meals[selectedDiet].snacks, glutenFree, nutFree);
+
+                    mealPlanHTML += `
+                        <div class="meal-card bg-white rounded-xl shadow-soft border ${getBorderClass()} overflow-hidden transition-all hover:shadow-card" style="animation-delay: ${index * 0.1}s">
+                            <div class="p-4 ${getColorClass()} flex items-center justify-between">
+                                <h3 class="font-semibold">${day}</h3>
+                                <span class="text-xs px-2 py-1 bg-white bg-opacity-30 rounded-full">${calories} cal</span>
+                            </div>
+                            <div class="p-5 space-y-4">
+                                <div>
+                                    <div class="flex items-center text-gray-700 mb-2">
+                                        <i class="fas fa-sun text-yellow-500 mr-2"></i>
+                                        <span class="font-medium">Breakfast</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm">${breakfast}</p>
+                                </div>
+                                <div>
+                                    <div class="flex items-center text-gray-700 mb-2">
+                                        <i class="fas fa-cloud-sun text-orange-500 mr-2"></i>
+                                        <span class="font-medium">Lunch</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm">${lunch}</p>
+                                </div>
+                                <div>
+                                    <div class="flex items-center text-gray-700 mb-2">
+                                        <i class="fas fa-moon text-indigo-500 mr-2"></i>
+                                        <span class="font-medium">Dinner</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm">${dinner}</p>
+                                </div>
+                                <div>
+                                    <div class="flex items-center text-gray-700 mb-2">
+                                        <i class="fas fa-apple-alt text-red-500 mr-2"></i>
+                                        <span class="font-medium">Snack</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm">${snack}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                mealPlanDiv.innerHTML = mealPlanHTML;
+                loadingDiv.classList.add('hidden');
+                resultDiv.classList.remove('hidden');
+
+                document.querySelectorAll('.meal-card').forEach((card, index) => {
+                    setTimeout(() => {
+                        card.classList.add('fade-in');
+                    }, index * 100);
+                });
+
+            } catch (error) {
+                console.error('Error generating meal plan:', error);
+                loadingDiv.classList.add('hidden');
+            }
+        }
+
+        function getRandomMeal(mealList, glutenFree, nutFree) {
+            const index = Math.floor(Math.random() * mealList.length);
+            return mealList[index];
+        }
+
+        function downloadMealPlan() {
+            const mealPlanText = document.getElementById('meal-plan').innerText;
+            const dietType = selectedDiet ? selectedDiet.charAt(0).toUpperCase() + selectedDiet.slice(1) : '';
+            
+            const blob = new Blob([`${dietType} Meal Plan\n\n${mealPlanText}`], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${dietType}_Meal_Plan.txt`;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+            
+        }
+
+
+        generateBtn.addEventListener('click', generateMealPlan);
+        downloadBtn.addEventListener('click', downloadMealPlan);
+        newPlanBtn.addEventListener('click', () => {
+            resultDiv.classList.add('hidden');
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        document.getElementById('vegan-btn').click();
+    </script>
+</body>
+</html>

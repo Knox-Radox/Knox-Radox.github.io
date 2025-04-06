@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Recipe Master</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+
+    .card-container {
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    .input-field {
+      transition: all 0.3s ease;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      transition: all 0.3s ease;
+      background-image: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 15px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-group {
+      animation: fadeIn 0.5s ease-out;
+      animation-fill-mode: both;
+    }
+
+    .form-group:nth-child(1) { animation-delay: 0.1s; }
+    .form-group:nth-child(2) { animation-delay: 0.2s; }
+    .form-group:nth-child(3) { animation-delay: 0.3s; }
+    .form-group:nth-child(4) { animation-delay: 0.4s; }
+    .form-group:nth-child(5) { animation-delay: 0.5s; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen flex items-center justify-center p-4">
+  <!-- Background decoration elements -->
+  <div class="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
+    <div class="absolute top-20 left-20 w-64 h-64 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
+    <div class="absolute top-40 right-40 w-72 h-72 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+    <div class="absolute bottom-40 left-1/2 w-80 h-80 bg-pink-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+  </div>
+
+  <!-- Card container -->
+  <div class="card-container bg-white bg-opacity-95 backdrop-blur-sm p-8 sm:p-10 rounded-2xl shadow-xl max-w-md w-full mx-4 relative z-10">
+    <div class="text-center mb-8">
+      <div class="inline-block p-3 rounded-full bg-blue-50 mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+        </svg>
+      </div>
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">Welcome to Culinary Compass</h1>
+      <p class="text-gray-600">Login to access your delicious recipes</p>
+    </div>
+
+    <form id="loginForm" class="space-y-5">
+      <div class="form-group">
+        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          placeholder="Enter your name"
+          class="input-field w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+          required
+        />
+        <p id="nameError" class="text-sm text-red-500 mt-1 hidden">Please enter your name.</p>
+      </div>
+
+      <div class="form-group">
+        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Enter your email"
+          class="input-field w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+          required
+        />
+        <p id="emailError" class="text-sm text-red-500 mt-1 hidden">Please enter a valid email.</p>
+      </div>
+
+      <div class="form-group">
+        <label for="designation" class="block text-sm font-medium text-gray-700 mb-2">Designation</label>
+        <select
+          id="designation"
+          name="designation"
+          class="input-field w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+          required
+        >
+          <option value="" disabled selected>Select your cooking level</option>
+          <option value="Hobby Cook">Hobby Cook</option>
+          <option value="Home Chef">Home Chef</option>
+          <option value="Professional Chef">Professional Chef</option>
+          <option value="Culinary Student">Culinary Student</option>
+          <option value="Food Enthusiast">Food Enthusiast</option>
+        </select>
+        <p id="designationError" class="text-sm text-red-500 mt-1 hidden">Please select your designation.</p>
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+        <div class="relative">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter your password"
+            class="input-field w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+            required
+          />
+          <p id="passwordError" class="text-sm text-red-500 mt-1 hidden">Password must be at least 6 characters.</p>
+        </div>
+      </div>
+
+      <div class="form-group flex items-center justify-between">
+        <div class="flex items-center">
+          <input
+            type="checkbox"
+            id="rememberMe"
+            name="rememberMe"
+            class="h-4 w-4 text-blue-500 focus:ring-blue-500 border-gray-300 rounded"
+          />
+          <label for="rememberMe" class="ml-2 text-sm text-gray-600">Remember me</label>
+        </div>
+        <a href="#" class="text-sm text-blue-500 hover:text-blue-700 transition-all">Forgot password?</a>
+      </div>
+
+      <button
+        type="submit"
+        class="btn-primary w-full px-4 py-3 rounded-lg text-white font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+      >
+        Login
+      </button>
+    </form>
+
+    <div class="mt-8 text-center">
+      <p class="text-gray-600">Don't have an account? <a href="#" class="text-blue-500 font-medium hover:text-blue-700 transition-all">Sign up</a></p>
+    </div>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const nameInput = document.getElementById('name');
+    const emailInput = document.getElementById('email');
+    const designationInput = document.getElementById('designation');
+    const passwordInput = document.getElementById('password');
+    const nameError = document.getElementById('nameError');
+    const emailError = document.getElementById('emailError');
+    const designationError = document.getElementById('designationError');
+    const passwordError = document.getElementById('passwordError');
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      // Reset error states
+      nameError.classList.add('hidden');
+      emailError.classList.add('hidden');
+      designationError.classList.add('hidden');
+      passwordError.classList.add('hidden');
+      
+      let isValid = true;
+
+      // Validate name
+      const name = nameInput.value.trim();
+      if (!name.match(/^[a-zA-Z ]+$/)) {
+        nameError.classList.remove('hidden');
+        isValid = false;
+      }
+
+      // Validate email
+      const email = emailInput.value.trim();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        emailError.classList.remove('hidden');
+        isValid = false;
+      }
+
+      // Validate designation
+      const designation = designationInput.value;
+      if (!designation) {
+        designationError.classList.remove('hidden');
+        isValid = false;
+      }
+
+      // Validate password
+      const password = passwordInput.value.trim();
+      if (!password || password.length < 6) {
+        passwordError.classList.remove('hidden');
+        isValid = false;
+      }
+
+      if (isValid) {
+        // Store values in localStorage
+        localStorage.setItem('userName', name);
+        localStorage.setItem('userDesignation', designation);
+        
+        // Show success message
+        const successMessage = document.createElement('div');
+        successMessage.className = 'fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded animate__animated animate__fadeInRight';
+        successMessage.innerHTML = `<p>Login successful! Redirecting...</p>`;
+        document.body.appendChild(successMessage);
+        
+        // Redirect after a short delay
+        setTimeout(() => {
+          window.location.href = 'welcome.html';
+        }, 1500);
+      }
+    });
+  </script>
+</body>
+</html>
