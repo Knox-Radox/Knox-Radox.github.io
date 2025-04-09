@@ -333,7 +333,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json();
         })
         .then(data => {
-            console.log(data);
+            //console.log(data);
         })
         .catch(error => {
             console.error('Error:', error);
@@ -341,7 +341,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         
 
-        let recipes = [
+        let defaultRecipes = [
             {
                 "name": 'Spaghetti',
                 "cuisine": 'Italian',
@@ -375,7 +375,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
         ];
 
+        let savedRecipes = JSON.parse(localStorage.getItem("recipes")) || [];
+
+        const recipes = [
+    ...defaultRecipes,
+    ...savedRecipes.filter(
+        r => !defaultRecipes.some(d => d.name === r.name)
+    )
+];
+
         const recipeGrid = document.getElementById('recipeGrid');
+
+        // Save recipes back to localStorage (initial save)
+  localStorage.setItem("recipes", JSON.stringify(recipes));
+
+// Rendering logic (assumes a renderRecipes function)
+renderRecipes(recipes);
+
+// Function to add new recipe from OCR and save
+function addRecipeFromOCR(ocrRecipe) {
+  recipes.push(ocrRecipe);
+  localStorage.setItem("recipes", JSON.stringify(recipes));
+  renderRecipes(recipes); // Refresh the display
+}
 
         function renderRecipes(recipesToRender) {
     recipeGrid.innerHTML = ''; // Clear previous content
@@ -430,6 +452,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const deleteButton = recipeCard.querySelector('.delete-btn');
         deleteButton.addEventListener('click', () => {
             recipes.splice(index, 1); // Remove from array
+
+            const userRecipes = recipes.filter(r => !defaultRecipes.some(d => d.name === r.name));
+            localStorage.setItem("recipes", JSON.stringify(userRecipes));
+
             renderRecipes(recipes); // Re-render
         });
 
