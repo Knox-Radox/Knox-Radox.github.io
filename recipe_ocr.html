@@ -45,7 +45,7 @@
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
-    <div class="sidebar w-full md:w-64 bg-white border-b md:border-r h-auto md:h-screen p-4 md:p-6 fixed left-0 right-0 md:right-auto top-0 z-10">
+<div class="sidebar flex flex-col h-screen w-full md:w-64 bg-white border-b md:border-r p-4 md:p-6 fixed left-0 right-0 md:right-auto top-0 z-10">
         <div class="flex items-center justify-between md:justify-start mb-4 md:mb-10">
             <div class="flex items-center">
                 <video src="organize-teamspaces.mp4" autoplay muted width="30" height="30" class="md:w-10 md:h-10"></video>
@@ -108,7 +108,7 @@
             </ul>
 
             <div class="flex mt-4 md:mt-[285px]">
-                <div class="flex items-center bg-white border border-gray-300 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group w-full max-w-[90vw] md:w-[257px] md:ml-[-26px]">
+                <div class="flex items-center bg-white border border-gray-300 shadow-sm hover:shadow-md transition-all duration-300 relative overflow-hidden group w-full max-w-[90vw] lg:w-[397px] md:ml-[-26px]">
                     <div class="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-indigo-500 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     
                     <div class="relative mx-2 my-2">
@@ -219,22 +219,15 @@
                                 <input type="text" id="recipe-title" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
                             <div>
-                                <label for="recipe-category" class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                                <label for="recipe-category" class="block text-sm font-medium text-gray-700 mb-1">Cuisine</label>
                                 <select id="recipe-category" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
-                                    <option value="">Select a category</option>
-                                    <option value="breakfast">Breakfast</option>
-                                    <option value="lunch">Lunch</option>
-                                    <option value="dinner">Dinner</option>
-                                    <option value="dessert">Dessert</option>
-                                    <option value="snack">Snack</option>
-                                    <option value="beverage">Beverage</option>
+                                    <option value="">Select a Cuisine</option>
+                                    <option value="Italian">Italian</option>
+                                    <option value="Mexican">Mexican</option>
+                                    <option value="Asian">Asian</option>
+                                    <option value="Indian">Indian</option>
                                 </select>
                             </div>
-                        </div>
-
-                        <div class="mb-8">
-                            <label for="recipe-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                            <textarea id="recipe-description" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"></textarea>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -361,8 +354,36 @@
             
             recipeForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                alert('Recipe saved successfully!');
-                resetScanner();
+                const name = document.getElementById("recipe-title").value.trim();
+    const cuisine = document.getElementById("recipe-category").value;
+    const imageUrl = 'https://picsum.photos/300/200'; // Placeholder image URL
+
+    const ingredientElems = document.querySelectorAll("#ingredients-list input[type='text']");
+const stepElems = document.querySelectorAll("#instructions-list input[type='text']");
+
+const ingredients = Array.from(ingredientElems).map(el => el.value.trim()).filter(Boolean);
+const steps = Array.from(stepElems).map(el => el.value.trim()).filter(Boolean);
+   
+if (!name || !cuisine || ingredients.length === 0 || steps.length === 0) {
+    alert("Please fill in all fields.");
+    return;
+}    
+
+const newRecipe = { name, cuisine, imageUrl, ingredients, steps };
+
+// Get saved user recipes (not defaults)
+const savedUserRecipes = JSON.parse(localStorage.getItem("recipes")) || [];
+
+// Prevent duplicates (by name)
+const updatedUserRecipes = savedUserRecipes.filter(r => r.name !== name);
+
+// Add new recipe
+updatedUserRecipes.push(newRecipe);
+
+// Save to localStorage
+localStorage.setItem("recipes", JSON.stringify(updatedUserRecipes));
+alert("Recipe saved successfully!");
+resetScanner();
             });
 
             function handleDrop(e) {
